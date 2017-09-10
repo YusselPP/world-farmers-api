@@ -80,6 +80,8 @@ return [
 
     'locale' => 'es',
 
+    'faker_locale' => 'es_ES',
+
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
@@ -176,6 +178,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        Barryvdh\Cors\ServiceProvider::class,
 
     ],
 

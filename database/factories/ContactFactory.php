@@ -9,14 +9,13 @@ $factory->define(App\Contact::class, function (Faker $faker) {
         'phoneNumber' => $faker->phoneNumber,
         'products' => join(', ', $faker->words($nb = 3)),
 
-        'experienceYears' => $faker->numberBetween(1, 50),
-        'experienceYearsUnit' => $faker->randomElement(array ('YEAR','MONTH')),
+        'startedWorking' => $faker->date($format = 'Y-m-d', $max = 'now'),
 
         'landSize' => $faker->numberBetween(1, 1000),
-        'landSizeUnit' => $faker->randomElement(array ('M2','HA2','KM2')),
+        'landSizeUnit' => 'HA',
 
-        'harvestAmount' => $faker->numberBetween(10, 1000) ,
-        'harvestAmountUnit' => $faker->randomElement(array ('GR','KG','TON','LT')),
+        'harvestAmount' => $faker->numberBetween(1, 100) ,
+        'harvestAmountUnit' => $faker->randomElement(array ('KG','TON')),
 
         'locality' => $faker->city .', '. $faker->state,
         'latitude' => $faker->latitude(-90, 90),

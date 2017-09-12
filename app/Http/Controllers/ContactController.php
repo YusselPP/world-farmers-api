@@ -61,18 +61,7 @@ class ContactController extends Controller
      */
     public function update(Request $request, Contact $contact)
     {
-        // return response()->json($request->ajax());
-        // return response()->json($request->all());
-        // $request->validate([
-        //     'name' => 'required|max:100',
-        //     'phoneNumber' => 'required|max:100'
-        //     'name' => 'required|max:100'
-        //     'name' => 'required|max:100'
-        //     'name' => 'required|max:100'
-        //     'name' => 'required|max:100'
-        //     'name' => 'required|max:100'
-        //     'name' => 'required|max:100'
-        // ]);
+        $request->validate($contact->rules);
         $contact->fill($request->all());
         $contact->save();
     }

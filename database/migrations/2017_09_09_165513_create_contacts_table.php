@@ -15,19 +15,18 @@ class CreateContactsTable extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('phoneNumber');
+            $table->string('name', 150);
+            $table->string('phoneNumber', 30);
 
-            $table->string('products');
+            $table->string('products', 150);
 
-            $table->integer('experienceYears');
-            $table->string('experienceYearsUnit');
+            $table->date('startedWorking');
 
             $table->integer('landSize');
-            $table->string('landSizeUnit');
+            $table->string('landSizeUnit', 5);
 
             $table->integer('harvestAmount');
-            $table->string('harvestAmountUnit');
+            $table->string('harvestAmountUnit', 5);
 
             $table->string('locality');
             $table->decimal('latitude', 11, 7);

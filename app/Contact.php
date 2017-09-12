@@ -7,6 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 class Contact extends Model
 {
     /**
+     * Rules for validating model attributes assignment.
+     *
+     * @var array
+     */
+    public $rules = [
+        'name' => 'required|max:',
+        'phoneNumber'  => 'required',
+        'products'  => 'required',
+
+        'startedWorking'  => 'required',
+
+        'landSize'  => 'required',
+        'landSizeUnit'  => 'required',
+        
+        'harvestAmount'  => 'required',
+        'harvestAmountUnit'  => 'required',
+
+        'locality'  => 'required',
+        'latitude'  => 'required',
+        'longitude'  => 'required',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -16,8 +39,7 @@ class Contact extends Model
         'phoneNumber',
         'products',
 
-        'experienceYears',
-        'experienceYearsUnit',
+        'startedWorking',
 
         'landSize',
         'landSizeUnit',

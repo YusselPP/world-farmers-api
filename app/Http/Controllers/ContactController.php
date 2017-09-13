@@ -37,7 +37,8 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        // Add validation
+        // dd('-5a' > -1);
+        $request->validate(Contact::$rules);
         Contact::create($request->all());
     }
 
@@ -61,7 +62,7 @@ class ContactController extends Controller
      */
     public function update(Request $request, Contact $contact)
     {
-        $request->validate($contact->rules);
+        $request->validate(Contact::$rules);
         $contact->fill($request->all());
         $contact->save();
     }

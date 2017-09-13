@@ -11,22 +11,26 @@ class Contact extends Model
      *
      * @var array
      */
-    public $rules = [
-        'name' => 'required|max:',
-        'phoneNumber'  => 'required',
-        'products'  => 'required',
+    public static $rules = [
+        'name' => 'required|max:150',
+        'phoneNumber'  => 'required|max:30',
+        'products'  => 'required|max:150',
 
-        'startedWorking'  => 'required',
+        'startedWorking'  => 'required|after:1901-12-13|before:tomorrow|date',
 
-        'landSize'  => 'required',
-        'landSizeUnit'  => 'required',
-        
-        'harvestAmount'  => 'required',
-        'harvestAmountUnit'  => 'required',
+        // regex: Decimales positivos de 9 digitos del lado izq 3 der
+        // 'landSize'  => ['required', 'regex:/(^[0-9]{1,9}(\.[0-9]{0,3})?$)|(^[0-9]{0,9}\.[0-9]{1,3}$)/'],
+        'landSize' => 'required|numeric|min:0|max:999999999',
+        'landSizeUnit'  => 'required|max:5',
 
-        'locality'  => 'required',
-        'latitude'  => 'required',
-        'longitude'  => 'required',
+        // regex: Decimales positivos de 9 digitos del lado izq 3 der
+        // 'harvestAmount'  => ['required', 'regex:/(^[0-9]{1,9}(\.[0-9]{0,3})?$)|(^[0-9]{0,9}\.[0-9]{1,3}$)/'],
+        'harvestAmount' => 'required|numeric|min:0|max:999999999',
+        'harvestAmountUnit'  => 'required|max:5',
+
+        'locality'  => 'required|max:191',
+        'latitude' => 'required|numeric|min:-90|max:90',
+        'longitude'  => 'required|numeric|min:-180|max:180',
     ];
 
     /**

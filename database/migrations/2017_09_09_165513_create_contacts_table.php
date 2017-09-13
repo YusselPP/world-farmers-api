@@ -22,13 +22,13 @@ class CreateContactsTable extends Migration
 
             $table->date('startedWorking');
 
-            $table->integer('landSize');
+            $table->decimal('landSize', 12, 3);
             $table->string('landSizeUnit', 5);
 
-            $table->integer('harvestAmount');
+            $table->decimal('harvestAmount', 12, 3);
             $table->string('harvestAmountUnit', 5);
 
-            $table->string('locality');
+            $table->string('locality',191);
             $table->decimal('latitude', 11, 7);
             $table->decimal('longitude', 11, 7);
             $table->timestamps();

@@ -41,10 +41,8 @@ class ContactController extends Controller
 
         $lastPage = max((int) ceil($total / $perPage), 1);
 
-        if ($page < 1) {
-            $page = 1;
-        } elseif ($page > $lastPage) {
-            $page = $lastPage;
+        if ($page < 1 || $page > $lastPage) {
+            $page = $lastPage + 1;
         }
 
         $request->query->set('page', $page);

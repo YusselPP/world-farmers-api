@@ -19,14 +19,39 @@ class ContactController extends Controller
 
     /**
      * Display a listing of the resource.
+     * ex: http://world-farmers.com/api/contacts?page=1&per_page=1&order_by=name
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        // http://world-farmers.com/api/contacts?page=1&per_page=1
-        return Contact::orderBy($request->query('order_by', 'name'))
-            ->paginate($request->query('per_page', 1));
+        $contact = new Contact;
+        $total = Contact::toBase()->getCountForPagination();
+        $perPage = $request->query('per_page', 1);
+        $page = $request->query('page', 1);
+        $order_by = $request->query('order_by', 'name');
+
+        if (!$contact->hasColumn($order_by)) {
+            $order_by = Contact::getDefaulOrderBy();
+        }
+
+        if ($perPage < 1 || $perPage > PHP_INT_MAX) {
+            $perPage = 1;
+        }
+
+        $lastPage = max((int) ceil($total / $perPage), 1);
+
+        if ($page < 1) {
+            $page = 1;
+        } elseif ($page > $lastPage) {
+            $page = $lastPage;
+        }
+
+        $request->query->set('page', $page);
+
+
+        return Contact::orderBy($order_by)
+            ->paginate($perPage);
     }
 
     /**
@@ -37,7 +62,6 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        // dd('-5a' > -1);
         $request->validate(Contact::$rules);
         Contact::create($request->all());
     }

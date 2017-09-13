@@ -13,18 +13,14 @@ class Contact extends Model
      */
     public static $rules = [
         'name' => 'required|max:150',
-        'phoneNumber'  => 'required|max:30',
+        'phoneNumber'  => ['required', 'max:30', 'regex:/^(([ \-+()]|\d)*)$/'],
         'products'  => 'required|max:150',
 
         'startedWorking'  => 'required|after:1901-12-13|before:tomorrow|date',
 
-        // regex: Decimales positivos de 9 digitos del lado izq 3 der
-        // 'landSize'  => ['required', 'regex:/(^[0-9]{1,9}(\.[0-9]{0,3})?$)|(^[0-9]{0,9}\.[0-9]{1,3}$)/'],
         'landSize' => 'required|numeric|min:0|max:999999999',
         'landSizeUnit'  => 'required|max:5',
 
-        // regex: Decimales positivos de 9 digitos del lado izq 3 der
-        // 'harvestAmount'  => ['required', 'regex:/(^[0-9]{1,9}(\.[0-9]{0,3})?$)|(^[0-9]{0,9}\.[0-9]{1,3}$)/'],
         'harvestAmount' => 'required|numeric|min:0|max:999999999',
         'harvestAmountUnit'  => 'required|max:5',
 
@@ -64,4 +60,16 @@ class Contact extends Model
     protected $hidden = [
         'created_at', 'updated_at',
     ];
+
+
+
+    public static function getDefaulOrderBy() {
+        return 'name';
+    }
+
+
+
+    public function hasColumn($column) {
+        return \Schema::hasColumn($this->getTable(), $column);
+    }
 }

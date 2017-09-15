@@ -18,13 +18,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/user', function (Request $request) {
+	// dd(config('passport.client_secret'));
     // $user = new \App\User;
     // $user->name = 'Yussel Paredes';
-    // $user->password = Hash::make('fakepass');
-    // $user->email = 'test@mail.com';
+    // $user->password = Hash::make('');
+    // $user->email = 'yussel.paredes@gmail.com';
     // $user->save();
-    // dd(Hash::check('123admin', '$2y$10$K7KoXmNv.IXnaEUgg/chIuEeM5HIoyEot13HeAuygRe6LH4tpTyd2'));
+    // dd(Hash::check('', '$2y$10$K7KoXmNv.IXnaEUgg/chIuEeM5HIoyEot13HeAuygRe6LH4tpTyd2'));
 });
+
+Route::post('/login', 'AuthController@login');
 
 Route::resource('contacts', 'ContactController', ['except' => [
 	'create', 'edit'

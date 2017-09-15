@@ -14,7 +14,8 @@ class ContactController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('scope:write-contacts')->only('store|update|destroy');
+        $this->middleware('auth:api')->only(['store', 'update', 'destroy']);
+        $this->middleware('scope:write-contacts')->only(['store', 'update', 'destroy']);
     }
 
     /**

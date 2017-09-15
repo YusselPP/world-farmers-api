@@ -30,6 +30,10 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::routes();
 
+        Passport::tokensCan([
+            'write-contacts' => 'Create, update and delete Contacts',
+        ]);
+
         Passport::tokensExpireIn(Carbon::now()->addDays(1));
 
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(5));

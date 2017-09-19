@@ -27,8 +27,16 @@ Route::post('/user', function (Request $request) {
     // dd(Hash::check('', '$2y$10$K7KoXmNv.IXnaEUgg/chIuEeM5HIoyEot13HeAuygRe6LH4tpTyd2'));
 });
 
-Route::post('/login', 'AuthController@login');
 
+
+// Auth
+Route::post('/login', 'AuthController@login');
+Route::post('/login/refresh', 'AuthController@refresh');
+Route::post('/logout', 'AuthController@logout');
+
+
+
+// Contacts
 Route::resource('contacts', 'ContactController', ['except' => [
 	'create', 'edit'
 ]]);

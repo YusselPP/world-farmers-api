@@ -34,7 +34,7 @@ class AuthServiceProvider extends ServiceProvider
             'write-contacts' => 'Create, update and delete Contacts',
         ]);
 
-        Passport::tokensExpireIn(Carbon::now()->addDays(1));
+        Passport::tokensExpireIn(Carbon::now()->addDays(5));
 
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(5));
     }

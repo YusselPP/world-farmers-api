@@ -2,13 +2,24 @@
 
 namespace App;
 
+use App;
 use Auth;
+use DB;
 use Request;
 use Route;
+use Carbon\Carbon;
 use Illuminate\Auth\AuthenticationException;
+use Laravel\Passport\Passport;
+use Laravel\Passport\Http\Controllers\AccessTokenController;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Defuse\Crypto\Crypto;
+use League\OAuth2\Server\CryptKey;
+use Firebase\JWT\JWT;
+use Lcobucci\JWT\Parser as JwtParser;
 
 class AuthManager
 {
+
 	static function validateCredentials($request) {
 
 		$email = $request->input('email');
@@ -26,9 +37,11 @@ class AuthManager
 		}
 	}
 
-	static function getToken() {
+	static function getToken($request) {
 
-    	return requestToken([
+		self::pruneInvalidTokens();
+          
+    	return self::requestToken($request, [
 		        'grant_type' => 'password',
 		        'username' => $request->input('email'),
 		        'password' => $request->input('password'),
@@ -36,83 +49,69 @@ class AuthManager
 		    ]);
 	}
 
-	static function refreshToken() {
-		$refreshToken = DB::table('oauth_refresh_tokens')->where('name', 'John')->first();
+	static function refreshToken($request) {
+		$encoded_access_token = $request->input('access_token');
 
-		return requestToken([
-		        'grant_type' => 'refresh_token',
-		        'refresh_token' => $refreshToken,
-		        'scope' => $request->input('scope', ''),
-		    ]);
+		$access_token = (new JwtParser)->parse($encoded_access_token);
+
+		$access_token_id = $access_token->getClaim('jti');
+
+		$refreshToken = DB::table('oauth_refresh_tokens')
+							->where('access_token_id', $access_token_id)
+							->where('revoked', 0)
+							->first();
+
+		if (is_null($refreshToken)) {
+            throw new AuthenticationException('Invalid refresh token');
+        }
+
+        $expires_at = Carbon::parse($refreshToken->expires_at);
+
+        if ($expires_at->lt(Carbon::now())) {
+        	throw new AuthenticationException('refresh_token_expired');
+        }
+
+        $user = User::find($access_token->getClaim('sub'));
+
+		return $token = $user->createToken(NULL, $access_token->getClaim('scopes'))->accessToken;;
 	}
 
-	static function requestToken($params) {
-		$appUrl = config('app.url');
+	static function requestToken($request, $params) {
 
 		$params = array_merge([
 		        'client_id' => config('passport.client_id'),
 		        'client_secret' => config('passport.client_secret'),
 		    ], $params);	
 
-		$http = new \GuzzleHttp\Client;
-		$tokenResponse = $http->post($appUrl.'/oauth/token', [
-		    'form_params' => $params,
-		]);
+		$request->request->add($params);		
 
-		$token = json_decode((string) $tokenResponse->getBody(), true);
+		$tokenResponse = App::make('Laravel\Passport\Http\Controllers\AccessTokenController')
+							->issueToken((new DiactorosFactory)->createRequest($request));
 
+		$token = json_decode((string) $tokenResponse->content(), true);
+
+		return $token;
 		return array_only($token, ['access_token', 'expires_in']);
 	}
 
-	static function getTokenJson($request) {
+	static function logout() {
+		$token = Auth::user()->token();
 
-		$appUrl = config('app.url');
-    	$scope = $request->input('scope', '');
-    	$email = $request->input('email');
-    	$password = $request->input('password');
+		DB::table('oauth_refresh_tokens')
+			->where('access_token_id', $token->id)
+			->delete();
 
-    	// $tokenRequest = $request->duplicate();
-    	// $tokenRequest->request->replace([
-		   //      'grant_type' => 'password',
-		   //      'client_id' => config('passport.client_id'),
-		   //      'client_secret' => config('passport.client_secret'),
-		   //      'username' => $email,
-		   //      'password' => $password,
-		   //      'scope' => $scope,
-		   //  ]);
+        $token->delete();
+	}
 
-    	// $tokenRequest->server->set("REQUEST_URI", "/oauth/token");
+	static function pruneInvalidTokens() {
 
-    	// ready the request
-		// $tokenRequest = Request::create('oauth/token', 'POST', [
-		//         'grant_type' => 'password',
-		//         'client_id' => config('passport.client_id'),
-		//         'client_secret' => config('passport.client_secret'),
-		//         'username' => $email,
-		//         'password' => $password,
-		//         'scope' => $scope,
-		//     ]);
-		//$tokenRequest->headers->set('Content-Type', 'application/json');
-		//$tokenRequest->headers->set('X-Requested-With', 'XMLHttpRequest');
-		// dd([$request, $tokenRequest]);
+		DB::table('oauth_access_tokens')
+			->where('expires_at', '<', Carbon::now())
+			->delete();
 
-		// // handle the response
-		// $tokenResponse = Route::dispatch($tokenRequest);
-
-		$http = new \GuzzleHttp\Client;
-		$tokenResponse = $http->post($appUrl.'/oauth/token', [
-		    'form_params' => [
-		        'grant_type' => 'password',
-		        'client_id' => config('passport.client_id'),
-		        'client_secret' => config('passport.client_secret'),
-		        'username' => $email,
-		        'password' => $password,
-		        'scope' => $scope,
-		    ],
-		]);
-
-		$token = json_decode((string) $tokenResponse->getBody(), true);
-
-		return array_only($token, ['access_token', 'expires_in']);
+		DB::table('oauth_refresh_tokens')
+			->where('expires_at', '<', Carbon::now())
+			->delete();
 	}
 }

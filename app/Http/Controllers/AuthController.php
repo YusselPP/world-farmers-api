@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\AuthManager;
 use Illuminate\Http\Request;
 
@@ -11,21 +12,13 @@ class AuthController extends Controller
 
     	AuthManager::validateCredentials($request);
 
-        // Prune expired tokens or do it in Events
-
-    	return AuthManager::getTokenJson($request);
-    }
-
-    function refresh(Request $request) {
-
-    	// Validate refresh token
-        // request new token
-    	
+    	return AuthManager::getToken($request);
     }
 
     function logout(Request $request) {
 
     	// prune this token
+        AuthManager::logout();
     	
     }
 }

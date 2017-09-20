@@ -19,11 +19,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/user', function (Request $request) {
 	// dd(config('passport.client_secret'));
-    // $user = new \App\User;
-    // $user->name = 'Yussel Paredes';
-    // $user->password = Hash::make('');
-    // $user->email = 'yussel.paredes@gmail.com';
-    // $user->save();
+    $user = new \App\User;
+    $user->name = 'Yussel Paredes';
+    $user->password = Hash::make('123admin');
+    $user->email = 'yparedes@gmail.com';
+    $user->save();
     // dd(Hash::check('', '$2y$10$K7KoXmNv.IXnaEUgg/chIuEeM5HIoyEot13HeAuygRe6LH4tpTyd2'));
 });
 
@@ -31,8 +31,7 @@ Route::post('/user', function (Request $request) {
 
 // Auth
 Route::post('/login', 'AuthController@login');
-Route::post('/login/refresh', 'AuthController@refresh');
-Route::post('/logout', 'AuthController@logout');
+Route::middleware('auth:api')->post('/logout', 'AuthController@logout');
 
 
 

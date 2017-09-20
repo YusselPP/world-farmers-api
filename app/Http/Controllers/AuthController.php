@@ -11,20 +11,21 @@ class AuthController extends Controller
 
     	AuthManager::validateCredentials($request);
 
+        // Prune expired tokens or do it in Events
+
     	return AuthManager::getTokenJson($request);
     }
 
     function refresh(Request $request) {
 
-    	AuthManager::validateCredentials($request);
-
-    	return AuthManager::getTokenJson($request);
+    	// Validate refresh token
+        // request new token
+    	
     }
 
     function logout(Request $request) {
 
-    	AuthManager::validateCredentials($request);
-
-    	return AuthManager::getTokenJson($request);
+    	// prune this token
+    	
     }
 }

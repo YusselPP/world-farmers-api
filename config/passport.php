@@ -8,10 +8,4 @@ return [
 
     'client_secret' => env('PASSPORT_CLIENT_SECRET'),
 
-    'username' 		=> env('PASSPORT_USERNAME'),
-
-    'password' 		=> env('PASSPORT_PASSWORD'),
-
-    'scope' 		=> '',
-
 ];

@@ -17,8 +17,6 @@ class AuthController extends Controller
 
     function logout(Request $request) {
 
-    	// prune this token
         AuthManager::logout();
-    	
     }
 }

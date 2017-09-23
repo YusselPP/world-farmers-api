@@ -40,12 +40,19 @@ class AuthManager
 	static function getToken($request) {
 
 		self::pruneInvalidTokens();
+
+		$scope = '';
+		$scopes = json_decode(Auth::user()->scopes);
+
+		if (is_array($scopes)) {
+			$scope = implode(' ', $scopes);
+		}
           
     	return self::requestToken($request, [
 		        'grant_type' => 'password',
 		        'username' => $request->input('email'),
 		        'password' => $request->input('password'),
-		        'scope' => $request->input('scope', ''),
+		        'scope' => $scope,
 		    ]);
 	}
 

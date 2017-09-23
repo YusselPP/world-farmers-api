@@ -31,6 +31,7 @@ class AuthServiceProvider extends ServiceProvider
         Passport::routes();
 
         Passport::tokensCan([
+            'write-users' => 'Create, update and delete Users',
             'write-contacts' => 'Create, update and delete Contacts',
         ]);
 

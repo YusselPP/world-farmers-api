@@ -31,6 +31,7 @@ class ContactController extends Controller
         $perPage = $request->query('per_page', 1);
         $page = $request->query('page', 1);
         $order_by = $request->query('order_by', 'name');
+        $bounds = json_decode($request->query('bounds', ''));
 
         if (!$contact->hasColumn($order_by)) {
             $order_by = Contact::getDefaulOrderBy();
@@ -49,8 +50,31 @@ class ContactController extends Controller
         $request->query->set('page', $page);
 
 
-        return Contact::orderBy($order_by)
+        if (is_object($bounds)) {
+            $north = $bounds->north;
+            $south = $bounds->south;
+            $west = $bounds->west;
+            $east = $bounds->east;
+            
+            if ($north < $south) {
+                $this->swap($north, $south);
+            }
+
+            if ($east < $west) {
+                $this->swap($east, $west);
+            }
+
+
+            $query = Contact::whereBetween('latitude', [$south, $north])
+            ->whereBetween('longitude', [$west, $east])
+            ->orderBy($order_by)
             ->paginate($perPage);
+        } else {
+            $query = Contact::orderBy($order_by)
+            ->paginate($perPage);
+        }
+
+        return $query;
     }
 
     /**
@@ -99,5 +123,11 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         $contact->delete();
+    }
+
+    private function swap(&$x, &$y) {
+        $tmp=$x;
+        $x=$y;
+        $y=$tmp;
     }
 }

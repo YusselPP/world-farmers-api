@@ -32,6 +32,7 @@ class ContactController extends Controller
         $page = $request->query('page', 1);
         $order_by = $request->query('order_by', 'name');
         $bounds = json_decode($request->query('bounds', ''));
+        $filter = json_decode($request->query('filter', ''));
 
         if (!$contact->hasColumn($order_by)) {
             $order_by = Contact::getDefaulOrderBy();
@@ -49,6 +50,7 @@ class ContactController extends Controller
 
         $request->query->set('page', $page);
 
+        $query = Contact::orderBy($order_by);
 
         if (is_object($bounds)) {
             $north = $bounds->north;
@@ -64,17 +66,22 @@ class ContactController extends Controller
                 $this->swap($east, $west);
             }
 
-
-            $query = Contact::whereBetween('latitude', [$south, $north])
-            ->whereBetween('longitude', [$west, $east])
-            ->orderBy($order_by)
-            ->paginate($perPage);
-        } else {
-            $query = Contact::orderBy($order_by)
-            ->paginate($perPage);
+            $query = $query->whereBetween('latitude', [$south, $north])
+                ->whereBetween('longitude', [$west, $east]);
         }
 
-        return $query;
+        if (is_array($filter) && count($filter) > 0) {
+            
+            $query = $query->where(function ($query) use ($filter) {
+
+                foreach ($filter as $val) {
+                    $query->orWhere('name', 'LIKE', '%'.$val.'%')
+                        ->orWhere('products', 'LIKE', '%'.$val.'%');
+                }
+            });
+        }
+
+        return $query->paginate($perPage);
     }
 
     /**

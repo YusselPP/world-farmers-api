@@ -33,6 +33,7 @@ class ContactController extends Controller
         $order_by = $request->query('order_by', 'name');
         $bounds = json_decode($request->query('bounds', ''));
         $filter = json_decode($request->query('filter', ''));
+        $location = $request->query('location');
 
         if (!$contact->hasColumn($order_by)) {
             $order_by = Contact::getDefaulOrderBy();
@@ -79,6 +80,10 @@ class ContactController extends Controller
                         ->orWhere('products', 'LIKE', '%'.$val.'%');
                 }
             });
+        }
+
+        if ($location) {
+            $query = $query->where('locality', 'LIKE', '%'.$location.'%');
         }
 
         return $query->paginate($perPage);

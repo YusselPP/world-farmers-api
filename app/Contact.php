@@ -49,7 +49,9 @@ class Contact extends Model
 
         'locality',
         'latitude',
-        'longitude'
+        'longitude',
+
+        'image',
     ];
 
     /**

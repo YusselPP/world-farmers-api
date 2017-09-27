@@ -31,9 +31,9 @@ class ContactController extends Controller
         $perPage = $request->query('per_page', 1);
         $page = $request->query('page', 1);
         $order_by = $request->query('order_by', 'name');
-        $bounds = json_decode($request->query('bounds', ''));
-        $filter = json_decode($request->query('filter', ''));
-        $location = $request->query('location');
+        $bounds = json_decode($request->query('bounds'));
+        $filter = json_decode($request->query('filter'));
+        $location = json_decode($request->query('location'));
 
         if (!$contact->hasColumn($order_by)) {
             $order_by = Contact::getDefaulOrderBy();
@@ -82,8 +82,11 @@ class ContactController extends Controller
             });
         }
 
-        if ($location) {
-            $query = $query->where('locality', 'LIKE', '%'.$location.'%');
+        if (is_array($location)) {
+
+            foreach ($location as $val) {
+                $query = $query->where('locality', 'LIKE', '%'.$val.'%');
+            }
         }
 
         return $query->paginate($perPage);

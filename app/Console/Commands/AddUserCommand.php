@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Console;
+namespace App\Console\Commands;
 
-use App\UserRepository;
+use App\User;
 use Illuminate\Console\Command;
 
 class AddUserCommand extends Command
@@ -22,23 +22,23 @@ class AddUserCommand extends Command
     protected $description = 'Adds a new user';
 
     /**
-     * User repository to persist user in database
+     * User to persist in database
      *
-     * @var UserRepository
+     * @var User
      */
-    protected $userRepository;
+    protected $user;
 
     /**
      * Create a new command instance.
      *
-     * @param  UserRepository  $userRepository
+     * @param  User  $user
      * @return void
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(User $user)
     {
         parent::__construct();
 
-        $this->userRepository = $userRepository;
+        $this->user = $user;
     }
 
     /**
@@ -48,12 +48,12 @@ class AddUserCommand extends Command
      */
     public function handle()
     {
-        $user = $this->userRepository->create([
-            'name' => $this->argument('name'),
-            'email' => $this->argument('email'),
-            'password' => $this->argument('password')
-        ]);
+        $this->user->name = $this->argument('name');
+        $this->user->password = \Hash::make($this->argument('password'));
+        $this->user->email = $this->argument('email');
+        $this->user->scopes = json_encode(['*']);
+        $this->user->save();
 
-        $this->info(sprintf('A user was created with ID %s', $user->id));
+        $this->info(sprintf('A user was created with ID %s', $this->user->id));
     }
 }

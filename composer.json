@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "name": "farmersoftheworld/directory",
+    "description": "Farmers of the world directory.",
+    "keywords": ["farmers", "directory"],
     "license": "MIT",
     "type": "project",
     "require": {
